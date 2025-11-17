@@ -7,7 +7,7 @@
     <br>
 
     <label> content </label>
-    <textarea rows="4" cols="50" required v-model="content"></textarea>
+    <textarea  rows="4" cols="50" required v-model="content"></textarea>
     <button id="submit">Submit</button>
     </form>
     
@@ -94,6 +94,7 @@ import StudentService from '../services/StudentService.js';
 }
 </script>
 <style>
+
 form {
     max-width: 420px;
     margin: 30px auto;
@@ -103,35 +104,51 @@ form {
     border-radius: 10px;
 }
 label {
-    color: #aaa;
+    color: #171313;
+    font: helvetica;
     display: inline-block;
     margin-bottom: 20px 0 15px;
     font-size: 0.6em;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
+    text-color: #333;
 }
 input {
     display: block;
     padding: 10px 6px;
     width: 100%;
     box-sizing: border-box ;
-    border: none;
-    border-bottom: 1px solid #ddd;
+    border: 2px solid #4a4a4a; 
+    
     color: #555;
 }
 button#submit {
     background: #27ae60;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 15px 10px 15px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 1em;
-    margin-top: 20px;
+    display: block;
+    margin: 20px auto 0 auto;
+    font: helvetica;
+  
+    
 }
 table {
     margin: 50px auto;
     max-width: 800px;
+}
+textarea {
+    display: block;
+    padding: 10px 6px;
+    width: 100%;
+    box-sizing: border-box ;
+    border: 2px solid #4a4a4a;
+    color: #555;
+
+    
 }
 </style>
