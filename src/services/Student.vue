@@ -48,8 +48,9 @@
 </template>
 
 <script>
-import StudentService from '../services/StudentService.js';
+/*import StudentService from '../services/StudentService.js';
     export default {
+    
         name: "StudentView",
         data() {
             return {
@@ -77,7 +78,7 @@ import StudentService from '../services/StudentService.js';
                     content: this.content
                 };
                 StudentService.addStudent(student).then(() => {
-                    this.getStudents(); // Refresh the list after adding
+                    this.getStudents(); 
                     this.name = '';
                     this.content = '';
                 }).catch((e) => {
@@ -90,8 +91,39 @@ import StudentService from '../services/StudentService.js';
     mounted() {
         this.getStudents();
  
-    }
-}
+    }*/
+   import {ref, computed, onMounted} from 'vue';
+    import StudentService from '../services/StudentService.js';
+    const name = ref('');
+    const content = ref('');
+    const students = ref([]);
+
+    const sortedStudents = computed(() => {
+        return [...students.value].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    });
+    const getStudents = () => {
+        StudentService.getStudents().then((response) => {
+            students.value = response.data;
+        }).catch((e) => {
+            console.error('Error fetching students:', e);
+        });
+    };
+    const submit = () => {
+        const student = {
+            name: name.value,
+            content: content.value
+        };
+        StudentService.addStudent(student).then(() => {
+            getStudents();
+            name.value = '';
+            content.value = '';
+        }).catch((e) => {
+            console.error('Error adding student:', e);
+        });
+    };
+    onMounted(() => {
+        getStudents();
+    });
 </script>
 <style>
 
@@ -112,7 +144,7 @@ label {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
-    text-color: #333;
+    
 }
 input {
     display: block;
@@ -120,7 +152,6 @@ input {
     width: 100%;
     box-sizing: border-box ;
     border: 2px solid #4a4a4a; 
-    
     color: #555;
 }
 button#submit {
