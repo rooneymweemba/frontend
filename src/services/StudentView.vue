@@ -1,6 +1,6 @@
 <template>
 <div class = "submission-form">
-    <form @submit="submit">
+    <form @submit.prevent="submit">
     <label> name </label>
     <input type="text" required v-model="name">
    
@@ -13,7 +13,7 @@
     
     
 </div>
-<div class="table-responsive">
+<!-- <div class="table-responsive">
     <h1 class="text-center">Student Component</h1>
     <table class="table table-striped">
         <thead>
@@ -36,18 +36,31 @@
             <td>{{student.name}}</td>
             <td>{{student.content}}</td>
             <td>{{student.status}}</td>
-            <td>{{student.created_at}}</td>
-            <td>{{student.updated_at}}</td>
+            <td>{{student.createdAt}}</td>
+            <td>{{student.updatedAt}}</td>
             
             </tr>
             
         </tbody>
     </table>
+</div> -->
+<div class="card-grid">
+    <div class="card" v-for="student in sortedStudents" :key="student.id">
+        <h3>{{ student.name }}</h3>
+        <p>{{ student.content }}</p>
+        <p>Status: {{ student.status }}</p>
+        <p>Created At: {{ student.createdAt }}</p>
+        <p>Updated At: {{ student.updatedAt }}</p>
+    </div>
+
 </div>
+<button id="Prev" @click="getStudents(currentpage - 1)" :disabled="currentpage == 0" > prev </button>
+<span> Page {{currentpage + 1}} of {{totalPages}}  </span>
+<button id=" next" @click="getStudents(currentpage + 1)" :disabled="currentpage > totalPages - 2"> next </button>
     
 </template>
 
-<script>
+<script setup>
 /*import StudentService from '../services/StudentService.js';
     export default {
     
@@ -93,27 +106,32 @@
  
     }*/
    import {ref, computed, onMounted} from 'vue';
-    import StudentService from '../services/StudentService.js';
+    import StudentService from './StudentService.js';
     const name = ref('');
     const content = ref('');
     const students = ref([]);
+    let currentpage = ref(0);
+    let totalPages = ref(3);
+    
 
     const sortedStudents = computed(() => {
         return [...students.value].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     });
-    const getStudents = () => {
-        StudentService.getStudents().then((response) => {
-            students.value = response.data;
+    const getStudents = (pages = 0, size = 3) => {
+        StudentService.getPagedStudents(pages, size).then((response) => {
+            students.value = response.data.content;
+            totalPages = response.data.totalPages;
+            currentpage = response.data.number;
         }).catch((e) => {
             console.error('Error fetching students:', e);
         });
     };
     const submit = () => {
-        const student = {
+        const studentObject = {
             name: name.value,
             content: content.value
         };
-        StudentService.addStudent(student).then(() => {
+        StudentService.addStudent(studentObject).then(() => {
             getStudents();
             name.value = '';
             content.value = '';
@@ -122,7 +140,7 @@
         });
     };
     onMounted(() => {
-        getStudents();
+        getStudents(0, 3);
     });
 </script>
 <style>
@@ -181,5 +199,34 @@ textarea {
     color: #555;
 
     
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 30px auto;
+  max-width: 1000px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pagination button {
+  margin: 0 10px;
+  padding: 6px 12px;
 }
 </style>

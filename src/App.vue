@@ -1,14 +1,14 @@
 <template>
- <Student/>
+ <StudentView/>
 </template>
 
 <script>
-import Student from './services/Student.vue'
+import StudentView from './services/StudentView.vue'
 
 export default {
   name: 'App',
   components: {
-    Student
+    StudentView
 
   }
 }

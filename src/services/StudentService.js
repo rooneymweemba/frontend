@@ -5,6 +5,9 @@ class StudentService {
     getStudents() {
         return axios.get(API_URL);
     }
+    getPagedStudents(page, size){
+        return axios.get(`${API_URL}/paginationAndSort/${page}/${size}/createdAt`);
+    }
     addStudent(student){
         return axios.post(API_URL, student);
     }
