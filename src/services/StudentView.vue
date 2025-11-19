@@ -44,20 +44,24 @@
         </tbody>
     </table>
 </div> -->
-<div class="card-grid">
-    <div class="card" v-for="student in sortedStudents" :key="student.id">
-        <h3>{{ student.name }}</h3>
-        <p>{{ student.content }}</p>
+<div class="card-grid
+grid-cols-1 sm:grid-cols2 lg:grid-cols-3 gap-4 max-w-4xl mt-6"
+>
+    <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg transition" 
+    v-for="student in sortedStudents" :key="student.id">
+        <h3>name: {{ student.name }}</h3>
+        <p>content: {{ student.content }}</p>
         <p>Status: {{ student.status }}</p>
         <p>Created At: {{ student.createdAt }}</p>
         <p>Updated At: {{ student.updatedAt }}</p>
     </div>
 
 </div>
+<div class="pagination mt-4">
 <button id="Prev" @click="getStudents(currentpage - 1)" :disabled="currentpage == 0" > prev </button>
 <span> Page {{currentpage + 1}} of {{totalPages}}  </span>
 <button id=" next" @click="getStudents(currentpage + 1)" :disabled="currentpage > totalPages - 2"> next </button>
-    
+</div>
 </template>
 
 <script setup>
@@ -200,7 +204,7 @@ textarea {
 
     
 }
-.card-grid {
+/* .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
@@ -228,5 +232,5 @@ textarea {
 .pagination button {
   margin: 0 10px;
   padding: 6px 12px;
-}
+} */
 </style>
