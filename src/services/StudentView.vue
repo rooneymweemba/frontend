@@ -13,54 +13,28 @@
     
     
 </div>
-<!-- <div class="table-responsive">
-    <h1 class="text-center">Student Component</h1>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                
-                <th>Student ID</th>
-                <th>Name</th>
-                <th>Content</th>
-                <th>Status</th>
-                <th>Date-Created</th>
-                <th>Date-Updated </th>
-                
-                
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for = "student in sortedStudents" v-bind:key = "student.id">
-            
-            <td>{{student.id}}</td>
-            <td>{{student.name}}</td>
-            <td>{{student.content}}</td>
-            <td>{{student.status}}</td>
-            <td>{{student.createdAt}}</td>
-            <td>{{student.updatedAt}}</td>
-            
-            </tr>
-            
-        </tbody>
-    </table>
-</div> -->
-<div class="card-grid
-grid-cols-1 sm:grid-cols2 lg:grid-cols-3 gap-4 max-w-4xl mt-6"
+
+<div class="grid overflow-x-auto flex-nowrap p-2   lg:grid-cols-1 gap-4 max-w-lg mt-6 mx-auto"
 >
-    <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg transition" 
-    v-for="student in sortedStudents" :key="student.id">
+    <div class="overflow-x-auto flex-nowrap bg-white p-4 rounded-lg shadow hover:shadow-lg transition" 
+    v-for="student in sortedStudents" :key="student.id" @click="SelectedStudent(student.id)">
         <h3>name: {{ student.name }}</h3>
         <p>content: {{ student.content }}</p>
         <p>Status: {{ student.status }}</p>
         <p>Created At: {{ student.createdAt }}</p>
         <p>Updated At: {{ student.updatedAt }}</p>
+        <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 m-2" >
+            View Details
+        </button>
+        <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" >edit</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" >delete</button>
     </div>
 
 </div>
-<div class="pagination mt-4">
-<button id="Prev" @click="getStudents(currentpage - 1)" :disabled="currentpage == 0" > prev </button>
-<span> Page {{currentpage + 1}} of {{totalPages}}  </span>
-<button id=" next" @click="getStudents(currentpage + 1)" :disabled="currentpage > totalPages - 2"> next </button>
+<div class="flex justify-center mt-4">
+<button class="bg-gray-200 p-2 m-2 hover:bg-gray-300" @click="getStudents(currentpage - 1)" :disabled="currentpage == 0" > prev </button>
+<span class="m-2 p-2"> Page {{currentpage + 1}} of {{totalPages}}  </span>
+<button class="bg-gray-200 p-2 m-2 hover:bg-gray-300" id=" next" @click="getStudents(currentpage + 1)" :disabled="currentpage > totalPages - 2"> next </button>
 </div>
 </template>
 
@@ -109,19 +83,20 @@ grid-cols-1 sm:grid-cols2 lg:grid-cols-3 gap-4 max-w-4xl mt-6"
         this.getStudents();
  
     }*/
-   import {ref, computed, onMounted} from 'vue';
+    import {ref, computed, onMounted} from 'vue';
     import StudentService from './StudentService.js';
     const name = ref('');
     const content = ref('');
     const students = ref([]);
     let currentpage = ref(0);
     let totalPages = ref(3);
+    let studentID = ref(0);
     
 
     const sortedStudents = computed(() => {
         return [...students.value].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     });
-    const getStudents = (pages = 0, size = 3) => {
+    const getStudents = (pages = 0, size = 7) => {
         StudentService.getPagedStudents(pages, size).then((response) => {
             students.value = response.data.content;
             totalPages = response.data.totalPages;
@@ -130,6 +105,14 @@ grid-cols-1 sm:grid-cols2 lg:grid-cols-3 gap-4 max-w-4xl mt-6"
             console.error('Error fetching students:', e);
         });
     };
+    const SelectedStudent = (id)=> {
+        studentID = id;
+    }
+    const deleteStudent = (studentID)=>{
+        if(studentID = 0){
+            StudentService.deleteStudent(id)
+        }
+    }; 
     const submit = () => {
         const studentObject = {
             name: name.value,
@@ -144,7 +127,7 @@ grid-cols-1 sm:grid-cols2 lg:grid-cols-3 gap-4 max-w-4xl mt-6"
         });
     };
     onMounted(() => {
-        getStudents(0, 3);
+        getStudents(0, 7);
     });
 </script>
 <style>
@@ -204,7 +187,7 @@ textarea {
 
     
 }
-/* .card-grid {
+ /* .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
@@ -232,5 +215,5 @@ textarea {
 .pagination button {
   margin: 0 10px;
   padding: 6px 12px;
-} */
+}  */
 </style>

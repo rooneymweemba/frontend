@@ -11,6 +11,9 @@ class StudentService {
     addStudent(student){
         return axios.post(API_URL, student);
     }
+    deleteStudent(id){
+        return axios.delete(`${API_URL}/id`);
+    }
 
 }
 export default new StudentService();

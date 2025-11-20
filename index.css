@@ -1,3 +1,5 @@
+/* stylelint-disable at-rule-no-unknown */
+/* Keep Tailwind directives below when using PostCSS/Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
