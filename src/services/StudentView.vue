@@ -1,4 +1,5 @@
 <template>
+<!-- submission -->
 <div class = "submission-form">
     <form @submit.prevent="submit">
     <label> name </label>
@@ -13,7 +14,7 @@
     
     
 </div>
-
+<!-- students view -->
 <div class="grid overflow-x-auto flex-nowrap p-2   lg:grid-cols-1 gap-4 max-w-lg mt-6 mx-auto"
 >
     <div class="overflow-x-auto flex-nowrap bg-white p-4 rounded-lg shadow hover:shadow-lg transition" 
@@ -26,9 +27,50 @@
         <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 m-2" >
             View Details
         </button>
-        <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" >edit</button>
+        <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" @click.stop ="openEditPopup()" >edit </button>
         <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" @click.stop="deleteStudent(student.id)" >delete</button>
+        
     </div>
+
+</div>
+<!-- edit popup -->
+<div
+    v-if="showEditPopup" 
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h2 class="text-xl font-bold mb-4">Edit Student </h2>
+        <form>
+            <label class ="block mb-1">Name</label>
+            <input type="text" v-model="editStudentData.name" class="border w-full p-2 mb-3 rounded"/>
+            <label for="Status" >status: </label>
+            <select id="status" name="fruits">
+            <option value="DONE">DONE</option>
+            <option value="PENDING">PENDING</option>
+            </select>
+
+        </form>
+       
+        <!-- <label class="block mb-1">Content</label>
+        <textarea 
+        v-model="editStudentData.content" rows="3" class="border w-full p-2 mb-3 rounded"
+    > -->
+
+
+    <div class="flex justify-end">
+        <button 
+            class="px-4 py-2 bg-gray-500 text-white rounded mr-2 hover:bg-gray-600"
+            @click="showEditPopup = false">
+            Cancel
+        </button>
+        <button 
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" @click="saveEdit"
+        >
+            Save
+        </button>
+    </div>
+</div>
+
 
 </div>
 <div class="flex justify-center mt-4">
@@ -37,18 +79,21 @@
 <button class="bg-gray-200 p-2 m-2 hover:bg-gray-300" id=" next" @click="getStudents(currentpage + 1)" :disabled="currentpage > totalPages - 2"> next </button>
 </div>
 </template>
-
+<!-- scripts -->
 <script setup>
     
     import {ref, computed, onMounted} from 'vue';
     import StudentService from './StudentService.js';
-    import EditPopUp from '../components/EditPopUp.vue';
+
+    
     const name = ref('');
     const content = ref('');
     const students = ref([]);
     let currentpage = ref(0);
     let totalPages = ref(3);
     let selectedID = ref('');
+    const showEditPopup = ref(false)
+    const editStudentData = ref({id: '', name: '', content: '' });
     
 
     const sortedStudents = computed(() => {
@@ -89,12 +134,25 @@
             console.error('Error adding student:', e);
         });
     };
+    const openEditPopup = (student) => {
+        editStudentData.value = {...student};
+        showEditPopup.value = true;
+    }
+    // const saveEdit = () => {
+    //     const studentObject = {
+    //         status: status.value,
+    //         content: content.value
+    //     };
+    //     StudentService.u
+    // }
+   
     onMounted(() => {
         getStudents(0, 7);
         selectedStudent(0);
         
     });
 </script>
+<!-- css --> 
 <style>
 
 form {
@@ -149,9 +207,25 @@ textarea {
     box-sizing: border-box ;
     border: 2px solid #4a4a4a;
     color: #555;
-
-    
 }
+
+.popup {
+    position: fixed;
+    top: 0;
+    left:0;
+    right:0;
+    bottom: 0;
+    z-index: 99;
+    background-color: rgba(0,0,0,0.2);
+}
+.popup-inner {
+    background: #FFF;
+    padding: 32px;
+
+
+}
+
+
  /* .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

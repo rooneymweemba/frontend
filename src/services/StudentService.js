@@ -18,6 +18,19 @@ class StudentService {
         
         return axios.delete(`${API_URL}/${id}`);
     }
+    updateStudent(id, name, status){
+        const PUTUrl = API_URL + "/" + id + "?";
+        if(!name  ^ status){
+            return axios.put(`${PUTUrl}?status=${status}`);        
+        }
+        if(name  ^ !status){
+            return axios.put(`${PUTUrl}?name=${name}`);
+
+        }
+        else{
+            return axios.put(`${PUTUrl}?status=${status}`+`&`+`name=${name}`);
+        }
+    }
 
 }
 export default new StudentService();
