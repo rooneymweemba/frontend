@@ -12,7 +12,11 @@ class StudentService {
         return axios.post(API_URL, student);
     }
     deleteStudent(id){
-        return axios.delete(`${API_URL}/id`);
+        
+        console.log(id);
+
+        
+        return axios.delete(`${API_URL}/${id}`);
     }
 
 }

@@ -17,7 +17,7 @@
 <div class="grid overflow-x-auto flex-nowrap p-2   lg:grid-cols-1 gap-4 max-w-lg mt-6 mx-auto"
 >
     <div class="overflow-x-auto flex-nowrap bg-white p-4 rounded-lg shadow hover:shadow-lg transition" 
-    v-for="student in sortedStudents" :key="student.id" @click="SelectedStudent(student.id)">
+    v-for="student in sortedStudents" :key="student.id" @click="selectedStudent(student.id)">
         <h3>name: {{ student.name }}</h3>
         <p>content: {{ student.content }}</p>
         <p>Status: {{ student.status }}</p>
@@ -27,7 +27,7 @@
             View Details
         </button>
         <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" >edit</button>
-        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" >delete</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2" @click.stop="deleteStudent(student.id)" >delete</button>
     </div>
 
 </div>
@@ -39,58 +39,16 @@
 </template>
 
 <script setup>
-/*import StudentService from '../services/StudentService.js';
-    export default {
     
-        name: "StudentView",
-        data() {
-            return {
-                name: '',
-                content: '',
-                students: []
-            };
-        },
-        computed: {
-            sortedStudents() {
-                return [...this.students].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            }
-        },
-        methods: {
-            getStudents() {
-               StudentService.getStudents().then((response) =>{
-                    this.students = response.data;
-               }).catch((e) => {
-                    console.error('Error fetching students:', e)
-               });
-            },
-            submit(){
-                const student = {
-                    name: this.name,
-                    content: this.content
-                };
-                StudentService.addStudent(student).then(() => {
-                    this.getStudents(); 
-                    this.name = '';
-                    this.content = '';
-                }).catch((e) => {
-                    console.error('Error adding student:', e);
-                })
-
-
-            }
-        },
-    mounted() {
-        this.getStudents();
- 
-    }*/
     import {ref, computed, onMounted} from 'vue';
     import StudentService from './StudentService.js';
+    import EditPopUp from '../components/EditPopUp.vue';
     const name = ref('');
     const content = ref('');
     const students = ref([]);
     let currentpage = ref(0);
     let totalPages = ref(3);
-    let studentID = ref(0);
+    let selectedID = ref('');
     
 
     const sortedStudents = computed(() => {
@@ -105,12 +63,17 @@
             console.error('Error fetching students:', e);
         });
     };
-    const SelectedStudent = (id)=> {
-        studentID = id;
+    const selectedStudent = (id)=> {
+        console.log('stuudent selected {}', id);
+        selectedID.value = id;
     }
-    const deleteStudent = (studentID)=>{
-        if(studentID = 0){
-            StudentService.deleteStudent(id)
+
+    const deleteStudent = (id)=>{
+        console.log()
+        if (confirm('are you sure you want to delete this student?')){
+            console.log('deleting student with id =' + id)
+            StudentService.deleteStudent(id).then(() => getStudents(currentpage.value, 7))
+
         }
     }; 
     const submit = () => {
@@ -128,6 +91,8 @@
     };
     onMounted(() => {
         getStudents(0, 7);
+        selectedStudent(0);
+        
     });
 </script>
 <style>
