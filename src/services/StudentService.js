@@ -11,25 +11,15 @@ class StudentService {
     addStudent(student){
         return axios.post(API_URL, student);
     }
-    deleteStudent(id){
+    deleteStudent(student_id){
         
-        console.log(id);
+        console.log(student_id);
 
         
-        return axios.delete(`${API_URL}/${id}`);
+        return axios.delete(`${API_URL}/${student_id}`);
     }
-    updateStudent(id, name, status){
-        const PUTUrl = API_URL + "/" + id + "?";
-        if(!name  ^ status){
-            return axios.put(`${PUTUrl}?status=${status}`);        
-        }
-        if(name  ^ !status){
-            return axios.put(`${PUTUrl}?name=${name}`);
-
-        }
-        else{
-            return axios.put(`${PUTUrl}?status=${status}`+`&`+`name=${name}`);
-        }
+    updateStudent(student){
+        return axios.put(`${API_URL}/updateStudent/${encodeURIComponent(student.student_id)}?name=${encodeURIComponent(student.name)}&status=${encodeURIComponent(student.status)}&content=${encodeURIComponent(student.content)}`)
     }
 
 }

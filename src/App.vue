@@ -10,7 +10,7 @@ import StudentView from './services/StudentView.vue'
 export default {
   name: 'App',
   components: {
-    StudentView,
+    StudentView
     
   }
 }
