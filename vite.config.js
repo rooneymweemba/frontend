@@ -8,5 +8,9 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     tailwindcss(),
-  ]
+  
+  ],
+  server: {
+    historyApiFallback: true,
+  },
 })

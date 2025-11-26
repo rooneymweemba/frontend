@@ -1,17 +1,18 @@
 <template>
+<head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
   <!-- submission -->
-
+  
   <div
-    class="max-w-[800px] mx-auto bg-white shadow-xl rounded-xl p-6 mt-10 border-bottom-1 border-gray-200"
+    class=" grid max-w-[700px] mx-auto bg-white shadow-xl rounded-xl p-6 mt-10 border-bottom-1 border-gray-200"
   >
-    <form class="mx-auto space-y-4" @submit.prevent="submit">
+    <form class=" space-y-4" @submit.prevent="submit">
       <label
-        class="block text-sm font-semibold text-gray-700 uppercase tracking-wide"
+        class="grid text-sm font-semibold text-gray-700 uppercase tracking-wide"
       >
         name
       </label>
       <input
-        class="w-[500px] px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+        class="grid max-w-[500px] w-full mx-auto px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         type="text"
         required
         v-model="name"
@@ -20,13 +21,13 @@
       <br />
 
       <label
-        class="block text-sm font-semibold text-gray-700 uppercase tracking-wide"
+        class="grid text-sm font-semibold text-gray-700 uppercase tracking-wide"
       >
         content
       </label>
 
       <textarea
-        class="w-[500px] mx-auto px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+        class="grid max-w-[500px] w-full mx-auto px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
         required
         v-model="content"
       ></textarea>
@@ -58,15 +59,10 @@
         class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 m-2"
         @click.stop="openDetailsInNewTab(student)"
       >
-        new window View Details
-      </button>
-
-      <button
-        class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 m-2"
-        @click.stop="openDetailPopup(student)"
-      >
         View Details
       </button>
+
+
       <button
         class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2"
         @click.stop="openEditPopup(student)"
@@ -183,7 +179,7 @@ let totalPages = ref(3);
 let selectedStudentID = ref("");
 const showEditPopup = ref(false);
 const editStudentData = ref({ id: "", name: "", content: "" });
-const showDetailPopup = ref(false);
+
 
 const sortedStudents = computed(() => {
   return [...students.value].sort(
@@ -231,14 +227,11 @@ const submit = () => {
     });
 };
 
-const openDetailPopup = (student) => {
-  editStudentData.value = { ...student };
-  console.log("student " + editStudentData.value);
-  showDetailPopup.value = true;
-};
+
 
 const openDetailsInNewTab = (student) => {
-    window.open(`/student/${student.student_id}`, "_blank")
+  window.open(`/studentDetails/${student.student_id}`, "_blank")
+
 }
 const openEditPopup = (student) => {
   editStudentData.value = { ...student };

@@ -1,14 +1,25 @@
-import { createRouter } from "vue-router"
-import StudentDetailsView from '..services/StudentDetailsView.vue'
+import { createRouter, createWebHistory } from "vue-router"
+import StudentDetailsView from "../services/StudentDetailsView.vue"
+import StudentView from "../services/StudentView.vue"
 
+const routes = [
+{
+  path: "/studentDetails/:student_id",
+  name: "StudentDetailsView",
+  component: StudentDetailsView,
+  props:true
 
-const routes = {
-  path: "/student/:id",
-  name: "StudentDetails",
-  component: () => import("../views/StudentDetailsView.vue"),
-  props: true
-}
+},
+{
+  path: "/",
+  name: "StudentsView",
+  component: StudentView,
+},
+
+];
+
 const router = createRouter({
-    routes
-})
-export default router
+  history: createWebHistory(),  
+  routes,
+});
+export default router;

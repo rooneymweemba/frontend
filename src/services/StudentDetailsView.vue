@@ -1,25 +1,18 @@
 <template>
-  <div
+  <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-4 text-center">Student Details</h2>
     
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full text-left">
-      <h2 class="text-xl font-bold mb-4 text-center">Student Details</h2>
-      <p>name: {{ editStudentData.name }}</p>
-      <p>student_id: {{ editStudentData.student_id }}</p>
-      <p>content: {{ editStudentData.content }}</p>
-      <p>Status: {{ editStudentData.status }}</p>
-      <p>Created At: {{ editStudentData.createdAt }}</p>
-      <p>Updated At: {{ editStudentData.updatedAt }}</p>
+    <div v-if="student">
+      <p><strong>Name:</strong> {{ student.name }}</p>
+      <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+      <p><strong>Content:</strong> {{ student.content }}</p>
+      <p><strong>Status:</strong> {{ student.status }}</p>
+      <p><strong>Created:</strong> {{ student.createdAt }}</p>
+      <p><strong>Updated:</strong> {{ student.updatedAt }}</p>
+    </div>
 
-      <div class="flex justify-end">
-        <button
-          class="px-4 py-2 bg-gray-500 text-white rounded mr-2 hover:bg-gray-600"
-          @click="showDetailPopup = false"
-        >
-          Cancel
-        </button>
-      </div>
+    <div v-else>
+      <p>Loading...</p>
     </div>
   </div>
 </template>
@@ -27,14 +20,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import StudentService from '../StudentService';
+import StudentService from './StudentService';
 
 const route = useRoute();
-const student = ref({});
+const student = ref(null);
+onMounted(async () => {
+  try{
+    const id = route.params.student_id;
+    const response = await StudentService.getStudentById(id);
+    student.value = response.data;
+  }
+  catch (e) {
+    console.error("failed to load student details", e)
+  }
+});
+
 
 
 </script>
-
-<style>
-
-</style>
