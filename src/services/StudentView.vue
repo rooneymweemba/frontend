@@ -1,11 +1,13 @@
 <template>
-<head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
   <!-- submission -->
-  
+
   <div
-    class=" grid max-w-[700px] mx-auto bg-white shadow-xl rounded-xl p-6 mt-10 border-bottom-1 border-gray-200"
+    class="grid max-w-[700px] mx-auto bg-white shadow-xl rounded-xl p-6 mt-10 border-bottom-1 border-gray-200"
   >
-    <form class=" space-y-4" @submit.prevent="submit">
+    <form class="space-y-4" @submit.prevent="submit">
       <label
         class="grid text-sm font-semibold text-gray-700 uppercase tracking-wide"
       >
@@ -38,6 +40,11 @@
       >
         Submit
       </button>
+      <div v-if="errors.length" class="text-red-500 text-sm">
+        <ul>
+          <li v-for="error in errors" :key="error">{{ error }}</li>
+        </ul>
+      </div>
     </form>
   </div>
 
@@ -62,7 +69,6 @@
         View Details
       </button>
 
-
       <button
         class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2"
         @click.stop="openEditPopup(student)"
@@ -71,7 +77,28 @@
       </button>
       <button
         class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 m-2"
-        @click.stop="deleteStudent(student.id)"
+        @click.stop="showConfirmationPopup(student.id)"
+      >
+        delete
+      </button>
+    </div>
+  </div>
+  <!-- confirmation popup -->
+  <div
+    v-if="confirmationPopup"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+      <p>are you sure you want to delete this student record</p>
+      <button
+        class="px-2 text-white bg-blue-500 rounded m-2"
+        @click="closeConfirmationPopup"
+      >
+        cancel
+      </button>
+      <button
+        class="px-2 text-white bg-red-500 rounded m-2"
+        @click="confirmDelete"
       >
         delete
       </button>
@@ -106,13 +133,13 @@
         </select>
         <br /><br />
         <button
-          class="px-4 py-2 bg-gray-500 text-white rounded m-2 hover:bg-gray-600"
+          class="px-4 py-2 bg-blue-500 text-white rounded m-2 hover:bg-blue-600"
           @click="showEditPopup = false"
         >
           Cancel
         </button>
         <button
-          class="px-4 py-2 bg-gray-500 text-white rounded m-2 hover:bg-gray-600"
+          class="px-4 py-2 bg-red-500 text-white rounded m-2 hover:bg-red-600"
           @click="saveEdit"
         >
           Save
@@ -120,30 +147,7 @@
       </form>
     </div>
   </div>
-  <!-- Detail popup -->
-  <div
-    v-if="showDetailPopup"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full text-left">
-      <h2 class="text-xl font-bold mb-4 text-center">Student Details</h2>
-      <p>name: {{ editStudentData.name }}</p>
-      <p>student_id: {{ editStudentData.student_id }}</p>
-      <p>content: {{ editStudentData.content }}</p>
-      <p>Status: {{ editStudentData.status }}</p>
-      <p>Created At: {{ editStudentData.createdAt }}</p>
-      <p>Updated At: {{ editStudentData.updatedAt }}</p>
 
-      <div class="flex justify-end">
-        <button
-          class="px-4 py-2 bg-gray-500 text-white rounded mr-2 hover:bg-gray-600"
-          @click="showDetailPopup = false"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
   <!-- navigation -->
   <div class="flex justify-center mt-4">
     <button
@@ -170,16 +174,23 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import StudentService from "./StudentService.js";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const name = ref("");
 const content = ref("");
 const students = ref([]);
+
 let currentpage = ref(0);
 let totalPages = ref(3);
 let selectedStudentID = ref("");
+
 const showEditPopup = ref(false);
+const confirmationPopup = ref(false);
+const targetId = ref(null);
 const editStudentData = ref({ id: "", name: "", content: "" });
 
+const errors = ref([]);
 
 const sortedStudents = computed(() => {
   return [...students.value].sort(
@@ -201,17 +212,48 @@ const selectedStudent = (student_id) => {
   console.log("stuudent selected {}", student_id);
   selectedStudentID.value = student_id;
 };
-
-const deleteStudent = (student_id) => {
-  console.log();
-  if (confirm("are you sure you want to delete this student?")) {
-    console.log("deleting student with id =" + student_id);
-    StudentService.deleteStudent(student_id).then(() =>
-      getStudents(currentpage.value, 7)
-    );
-  }
+//
+const showConfirmationPopup = (student_id) => {
+  console.log("button accessed");
+  targetId.value = student_id;
+  confirmationPopup.value = true;
 };
+
+const closeConfirmationPopup = () => {
+  confirmationPopup.value = false;
+  targetId.value = null;
+};
+
+const confirmDelete = () => {
+  StudentService.deleteStudent(targetId.value)
+    .then(() => {
+      getStudents(currentpage, 7);
+    })
+    .catch((e) => {
+      console.error("Error deleting student:", e);
+    });
+
+  targetId.value = null;
+  confirmationPopup.value = false;
+};
+
 const submit = () => {
+  errors.value = [];
+
+  const numericRegex = /^[a-zA-Z ]*$/;
+  if (!name.value) {
+    errors.value.push("Name is required");
+  } else if (!numericRegex.test(name.value)) {
+    errors.value.push("Name must not contain a numerals");
+  }
+  if (!content.value) {
+    errors.value.push("Content is required.");
+  } else if (content.value.length > 255) {
+    errors.value.push("Content must not exceed 255 characters. ");
+  }
+
+  if (errors.value.length) return;
+
   const studentObject = {
     name: name.value,
     content: content.value,
@@ -222,17 +264,18 @@ const submit = () => {
       name.value = "";
       content.value = "";
     })
+    .then(() => {
+      getStudents(currentpage, 7);
+    })
     .catch((e) => {
       console.error("Error adding student:", e);
     });
 };
 
-
-
 const openDetailsInNewTab = (student) => {
-  window.open(`/studentDetails/${student.student_id}`, "_blank")
-
-}
+  //window.open(`/studentDetails/${student.student_id}`, "_blank");
+   router.push(`/studentDetails/${student.student_id}`,)
+};
 const openEditPopup = (student) => {
   editStudentData.value = { ...student };
 
@@ -246,7 +289,13 @@ const saveEdit = () => {
     status: editStudentData.value.status,
   };
   console.log(studentObject.name);
-  StudentService.updateStudent(studentObject);
+  StudentService.updateStudent(studentObject)
+    .then(() => {
+      getStudents(currentpage, 7);
+    })
+    .catch((e) => {
+      console.error("Error editing student:", e);
+    });
 
   editStudentData.value = { id: "", name: "", content: "", status: "" };
   showEditPopup.value = false;

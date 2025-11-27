@@ -7,7 +7,6 @@ const routes = [
   path: "/studentDetails/:student_id",
   name: "StudentDetailsView",
   component: StudentDetailsView,
-  props:true
 
 },
 {

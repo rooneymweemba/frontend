@@ -1,4 +1,5 @@
 <template>
+<button class=" float-left p-2 bg-blue-500  rounded m-2 text-white" @click="backToMainMenu">back</button>
   <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
     <h2 class="text-2xl font-bold mb-4 text-center">Student Details</h2>
     
@@ -19,10 +20,20 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import StudentService from './StudentService';
 
 const route = useRoute();
+const router = useRouter();
+
+
+
+const backToMainMenu = () => {
+  //window.open(`/studentDetails/${student.student_id}`, "_blank");
+   router.push("/")
+};
+
+
 const student = ref(null);
 onMounted(async () => {
   try{
